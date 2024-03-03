@@ -35,7 +35,7 @@
     (parser
         [start expr]
         [end EOF]
-        [tokens contiene vacios]
+        [tokens contenedores vacios]
         [error (lambda (msg) (printf "Error de análisis: ~a\n" msg))]
         [grammar
             [const

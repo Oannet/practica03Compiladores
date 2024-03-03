@@ -8,7 +8,7 @@
     NUM: Numero
     BOOLEAN: Booleano
 |#
-(define-tokens contiene (ID NUM BOOLEAN))
+(define-tokens contenedores (ID NUM BOOLEAN))
 #|
     Definimos los tokens que se utilizaran en el lenguaje
     están especificados en el PDF de la práctica
@@ -55,6 +55,7 @@
                             LEN
                             ADD
                             MUL
+                           QUESTION_MARK
                             EOF))
 #|
     Definimos las expresiones regulares que se utilizaran en el lenguaje
@@ -65,6 +66,7 @@
         [(:: "main") (token-MAIN)]
         [(:: #\+) (token-ADD)] ; raro
         [(:: #\*) (token-MUL)] ; raro
+        [(:: "**?**") (token-QUESTION_MARK)]
         [(:: "int") (token-INT)]
         [(:: "true")(token-BOOL)]
         [(:: "false")(token-BOOL)]
@@ -107,9 +109,8 @@
         [(:: #\=)(token-=)]
         [(:: #\:)(token-:)]
         [(:+ (char-range #\0 #\9))  (token-NUM (string->number lexeme))]
+        [(:seq (char-range #\a #\z) (:+ (:or (char-range #\a #\z) (char-range #\0 #\9) #\_)))  (token-ID lexeme)]   
         [(:+ (char-range #\a #\z))(token-ID lexeme)]
-       #| [(:: #\[ (+: (or (char-range #\0 #\9) (char-range #\a #\z) #\space)) #\]) 
-         (token-ARRAY (substring lexeme 1 (sub1 (string-length lexeme))))]|#
         [(:: "//" (complement (:: any-string "\n" any-string)) "\n") (jelly-lex input-port)]
         [(:: "{-" (complement (:: any-string "-}" any-string)) "-}") (jelly-lex input-port)]
         [whitespace (jelly-lex input-port)]
