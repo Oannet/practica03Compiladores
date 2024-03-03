@@ -55,7 +55,7 @@
                             LEN
                             ADD
                             MUL
-                           QUESTION_MARK
+                            QUESTION_MARK
                             EOF))
 #|
     Definimos las expresiones regulares que se utilizaran en el lenguaje

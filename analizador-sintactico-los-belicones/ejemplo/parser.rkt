@@ -1,57 +1,50 @@
-#lang nanopass
-(require "lexer.rkt"
-          parser-tools/yacc)
+(provide contenedores
+         vacios
+         jelly-lexer)
 
+#|
+Definimos las estructuras y expresiones con sus 
+respectivos cuerpos dentro de ellas para que trabajen
+como nodos en el árbol.
+|#
+(define-struct bin-exp (op arg1 arg2) #:transparent)
+(define-struct sin-exp (op arg1) #:transparent)
+(define-struct number (n) #:transparent)
+(define-struct bool (n) #:transparent)
+(define-struct id (i) #:transparent)
+(define-struct decl-var (i type) #:transparent)
+(define-struct array (type) #:transparent)
+(define-struct decl-arr (i type args) #:transparent)
+(define-struct length (var) #:transparent)
+(define-struct int-type ( ) #:transparent)
+(define-struct bool-type ( ) #:transparent)
+(define-struct fun (id  args body) #:transparent)
+(define-struct if-exp (conditional yes no) #:transparent)
+(define-struct if-short-exp (declaration conditional yes no) #:transparent)
+(define-struct while-exp (conditional body) #:transparent)
+(define-struct funcion-expr (id args type body) #:transparent)
+(define-struct funcall (id args) #:transparent)
+(define-struct main (exp func-list) #:transparent)
+(define-struct program (m met) #:transparent)
+(define-struct return (exp) #:transparent)
 
-; ; 2+3
+(define jelly-parser
+  (parser
+    [start program]    ; Simbolo inicial de la gramatica
+    [end EOF]       ; Paramos cuando veamos el token EOF
+    [tokens contenedores vacios] ; Tokens que reconocerá el parser
+    [error void]    ; Procedimiento si encontramos un error
 
-;     +
-;    / \
-;   2   +
-;      / \
-;     3   4
-
-; (+ 2 (+ 3 4))
-
-
-
-;     expr
-;     / | \
-;  expr + expr
-;   |      |
-;  const  const
-;   |      |
-;   2      3
-
-
-
-
-(define-struct num (v) #:transparent)
-(define-struct bin-op (op v1 v2) #:transparent)
-
-; (bin-op ADD (NUM 2) (NUM 3))
-
-(define hola-parser
-    (parser
-        [start expr]
-        [end EOF]
-        [tokens contenedores vacios]
-        [error (lambda (msg) (printf "Error de análisis: ~a\n" msg))]
-        [grammar
-            [const
-                [(NUM) (num $1)]]
-            [expr
-                [(expr ADD expr) (bin-op '+ $1 $3)]
-                [(expr MUL expr) (bin-op '* $1 $3)]
-                [(const)        $1]]]))
-
-; expr    :: const | expr + expr | expr * expr
-; const   :: 0 | 1 | 2 | 3 ... | 9
-
-
-
-(define (lex-this lexer input) (lambda () (lexer input)))
-
-(define (parsea in)
-        (let ([in-s (open-input-string in)])
-        (hola-parser (lex-this jelly-lex in-s))))
+    [precs  (nonassoc NOT)
+            (left * / MOD)
+            (left + -)
+            (left <= >= < >)
+            (left = EQ NEQ)
+            (left AND)
+            (left OR)]
+    
+    [grammar
+        [program
+            [(main) (program $1 void)]]
+        [main
+            [(MAIN LBr expr RBr expr-list) (main $3 $5)]]
