@@ -1,7 +1,7 @@
 #lang nanopass
 (require parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
-
+         (provide (all-defined-out))
 #|
     Definimos los tokens que se utilizaran en el lenguaje
     ID: Identificador
@@ -53,6 +53,8 @@
                             RETURN
                             ARRAY
                             LEN
+                            ADD
+                            MUL
                             EOF))
 #|
     Definimos las expresiones regulares que se utilizaran en el lenguaje
@@ -61,6 +63,8 @@
 (define jelly-lex
     (lexer
         [(:: "main") (token-MAIN)]
+        [(:: #\+) (token-ADD)] ; raro
+        [(:: #\*) (token-MUL)] ; raro
         [(:: "int") (token-INT)]
         [(:: "true")(token-BOOL)]
         [(:: "false")(token-BOOL)]
@@ -75,8 +79,8 @@
         [(:: "!=") '(!=)]
         [(:: "--")(token-DEC)]
         [(:: "++")(token-++)]
-        [(:: #\+)(token-+)]
-        [(:: #\-)(token--)]
+        [(:: #\+)(token-+)] ; raro
+        [(:: #\-)(token--)] ; raro
         [(:: #\*)(token-*)]
         [(:: #\/)(token-/)]
         [(:: #\>)(token->)]

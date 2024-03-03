@@ -35,8 +35,8 @@
     (parser
         [start expr]
         [end EOF]
-        [tokens contenedores vacios]
-        [error (display "hola")]
+        [tokens contiene vacios]
+        [error (lambda (msg) (printf "Error de análisis: ~a\n" msg))]
         [grammar
             [const
                 [(NUM) (num $1)]]
@@ -54,4 +54,4 @@
 
 (define (parsea in)
         (let ([in-s (open-input-string in)])
-        (hola-parser (lex-this hola-lexer in-s))))
+        (hola-parser (lex-this jelly-lex in-s))))
